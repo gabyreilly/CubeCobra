@@ -108,7 +108,13 @@ router.get('/follow/:id', ensureAuth, async (req, res) => {
       user.followed_users.push(other.id);
     }
 
-    await util.addNotification(other, user, `/user/view/${user.id}`, `${user.username} has followed you!`);
+    await util.addNotification(
+      other,
+      user,
+      `/user/view/${user.id}`,
+      `${user.username} has followed you!`,
+      util.notificationTypes.USER_FOLLOW,
+    );
 
     await Promise.all([user.save(), other.save()]);
 
@@ -612,6 +618,7 @@ router.get('/account', ensureAuth, (req, res) => {
     image: req.user.image,
     image_name: req.user.image_name,
     artist: req.user.artist,
+    notification_silenced_types: req.user.notification_silenced_types,
   };
   res.render('user/user_account', {
     reactProps: serialize({
@@ -759,6 +766,24 @@ router.post('/updateemail', ensureAuth, (req, res) => {
       }
     },
   );
+});
+
+router.post('/updatenotifications', ensureAuth, async (req, res) => {
+  try {
+    const { user } = req;
+
+    const preferredSilenced = Object.entries(req.body)
+      .filter((arr) => !arr[1] || arr[1] === 'false') // Only keep values where the user explicitly set to false
+      .map((arr) => arr[0]); // Create a string array of the notification type names
+
+    user.notification_silenced_types = preferredSilenced;
+    await user.save();
+
+    req.flash('success', 'User information updated. Preferences will apply to all future events.');
+    return res.redirect('/user/account?nav=notifications');
+  } catch (err) {
+    return util.handleRouteError(req, res, err, '/user/account?nav=notifications');
+  }
 });
 
 router.get('/social', ensureAuth, async (req, res) => {

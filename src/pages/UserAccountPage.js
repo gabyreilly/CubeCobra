@@ -48,6 +48,12 @@ const UserAccountPage = ({ user, defaultNav }) => {
     };
   }
 
+  function isChecked(notificationTypeName) {
+    return (
+      !user.notification_silenced_types || user.notification_silenced_types.indexOf(notificationTypeName) < 0 // If no preferences, default all to true
+    );
+  }
+
   useEffect(() => {
     if (nav === 'profile') {
       Query.del('nav');
@@ -76,6 +82,11 @@ const UserAccountPage = ({ user, defaultNav }) => {
             <NavItem>
               <NavLink href="#" active={nav === 'email'} data-nav="email" onClick={handleClickNav}>
                 Update Email
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink href="#" active={nav === 'notifications'} data-nav="notifications" onClick={handleClickNav}>
+                Notifications
               </NavLink>
             </NavItem>
           </Nav>
@@ -182,6 +193,143 @@ const UserAccountPage = ({ user, defaultNav }) => {
                 </Button>
               </CSRFForm>
             </TabPane>
+            <TabPane tabId="notifications">
+              <CSRFForm method="POST" action="/user/updatenotifications">
+                <FormGroup row>
+                  <h5>Choose which updates will show in your notification menu:</h5>
+                </FormGroup>
+                {/* 
+                TODO this is upcoming with 1131
+                <FormGroup row>
+                  <FormGroup className="col-sm-8">
+                    <Label>Updates and Blogs for cubes you follow</Label>
+                  </FormGroup>
+                  <FormGroup className="col-sm-2">
+                    <Input
+                      id="cube_updates_true"
+                      name="cube_updates"
+                      type="radio"
+                      value="true"
+                      defaultChecked={isChecked('cube_updates')}
+                    />
+                    <Label for="cube_updates_true">Yes </Label>
+                  </FormGroup>
+                  <FormGroup className="col-sm-2">
+                    <Input
+                      id="cube_updates_false"
+                      name="cube_updates"
+                      type="radio"
+                      value="false"
+                      defaultChecked={!isChecked('cube_updates')}
+                    />
+                    <Label for="cube_updates_false">No</Label>
+                  </FormGroup>
+                </FormGroup> */}
+                <FormGroup row>
+                  <FormGroup className="col-sm-8">
+                    <Label>Drafts of cubes you own</Label>
+                  </FormGroup>
+                  <FormGroup className="col-sm-2">
+                    <Input
+                      id="cube_draft_own_true"
+                      name="cube_draft_own"
+                      type="radio"
+                      value="true"
+                      defaultChecked={isChecked('cube_draft_own')}
+                    />
+                    <Label for="own_cube_draft_true">Yes </Label>
+                  </FormGroup>
+                  <FormGroup className="col-sm-2">
+                    <Input
+                      id="cube_draft_own_false"
+                      name="cube_draft_own"
+                      type="radio"
+                      value="false"
+                      defaultChecked={!isChecked('cube_draft_own')}
+                    />
+                    <Label for="cube_draft_own_false">No</Label>
+                  </FormGroup>
+                </FormGroup>
+                <FormGroup row>
+                  <FormGroup className="col-sm-8">
+                    <Label>Another user follows you</Label>
+                  </FormGroup>
+                  <FormGroup className="col-sm-2">
+                    <Input
+                      id="user_follow_true"
+                      name="user_follow"
+                      type="radio"
+                      value="true"
+                      defaultChecked={isChecked('user_follow')}
+                    />
+                    <Label for="user_follow_true">Yes </Label>
+                  </FormGroup>
+                  <FormGroup className="col-sm-2">
+                    <Input
+                      id="user_follow_false"
+                      name="user_follow"
+                      type="radio"
+                      value="false"
+                      defaultChecked={!isChecked('user_follow')}
+                    />
+                    <Label for="user_follow_false">No</Label>
+                  </FormGroup>
+                </FormGroup>
+                <FormGroup row>
+                  <FormGroup className="col-sm-8">
+                    <Label>Comments on your blog, draft, or conversation</Label>
+                  </FormGroup>
+                  <FormGroup className="col-sm-2">
+                    <Input
+                      id="user_comment_true"
+                      name="user_comment"
+                      type="radio"
+                      value="true"
+                      defaultChecked={isChecked('user_comment')}
+                    />
+                    <Label for="user_comment_true">Yes </Label>
+                  </FormGroup>
+                  <FormGroup className="col-sm-2">
+                    <Input
+                      id="user_comment_false"
+                      name="user_comment"
+                      type="radio"
+                      value="false"
+                      defaultChecked={!isChecked('user_comment')}
+                    />
+                    <Label for="user_comment_false">No</Label>
+                  </FormGroup>
+                </FormGroup>
+                <FormGroup row>
+                  <FormGroup className="col-sm-8">
+                    <Label>Clones of one of your cubes</Label>
+                  </FormGroup>
+                  <FormGroup className="col-sm-2">
+                    <Input
+                      id="cube_clone_true"
+                      name="cube_clone"
+                      type="radio"
+                      value="true"
+                      defaultChecked={isChecked('cube_clone')}
+                    />
+                    <Label for="cube_clone_true">Yes </Label>
+                  </FormGroup>
+                  <FormGroup className="col-sm-2">
+                    <Input
+                      id="cube_clone_false"
+                      name="cube_clone"
+                      type="radio"
+                      value="false"
+                      defaultChecked={!isChecked('cube_clone')}
+                    />
+                    <Label for="cube_clone_false">No</Label>
+                  </FormGroup>
+                </FormGroup>
+                <Button color="success" type="submit">
+                  Update
+                </Button>
+              </CSRFForm>
+            </TabPane>
           </TabContent>
         </Col>
       </Row>
@@ -198,6 +346,7 @@ UserAccountPage.propTypes = {
     image: PropTypes.string,
     artist: PropTypes.string,
     users_following: PropTypes.arrayOf(PropTypes.shape({}).isRequired),
+    notification_silenced_types: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   defaultNav: PropTypes.string.isRequired,
 };

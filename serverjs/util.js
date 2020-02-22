@@ -127,9 +127,21 @@ function fromEntries(entries) {
   return obj;
 }
 
-async function addNotification(user, from, url, text) {
+const notificationTypes = {
+  CUBE_UPDATE : "cube_update", // A cube that you follow (or whose owner you follow) has been updated
+  CUBE_DRAFT_OWN : "cube_draft_own", // Someone has drafted a cube that you own
+  USER_FOLLOW : "user_follow", // A user has followed you
+  USER_COMMENT : "user_comment", // A user has commented on something of yours
+  CUBE_CLONE : "cube_clone", //A user has cloned your cube
+};
+
+async function addNotification(user, from, url, text, notificationType) {
   if (user.username == from.username) {
     return; //we don't need to give notifications to ourselves
+  }
+
+  if (user.notification_silenced_types.indexOf(notificationType) >= 0) {
+    return; // This type of notification is silenced by the recipient
   }
 
   user.notifications.push({
@@ -233,6 +245,7 @@ var exports = {
     return user && user.username == adminname;
   },
   addNotification,
+  notificationTypes,
   wrapAsyncApi,
   handleRouteError,
 };

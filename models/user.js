@@ -67,6 +67,12 @@ const UserSchema = mongoose.Schema({
     ],
     default: [],
   },
+  // User preference for which notifications should not show up in their notification menu
+  // see util.js notificationTypes for values
+  notification_silenced_types: { 
+    type: [String],
+    default: [],
+  },
   image_name: {
     type: String,
     default: 'Ambush Viper',

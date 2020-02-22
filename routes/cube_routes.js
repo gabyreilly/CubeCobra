@@ -170,6 +170,7 @@ router.get('/clone/:id', async (req, res) => {
       req.user,
       `/cube/view/${cube._id}`,
       `${req.user.username} made a cube by cloning yours: ${cube.name}`,
+      util.notificationTypes.CUBE_CLONE,
     );
 
     req.flash('success', 'Cube Cloned');
@@ -2010,6 +2011,7 @@ router.post(
         user,
         `/cube/deck/${deck._id}`,
         `${user.username} added a comment to ${deck.name}`,
+        util.notificationTypes.USER_COMMENT,
       );
     } else {
       // need to find owner from comment tree
@@ -2019,6 +2021,7 @@ router.post(
         user,
         `/cube/deck/${deck._id}`,
         `${user.username} replied to your comment on ${deck.name}`,
+        util.notificationTypes.USER_COMMENT,
       );
     }
 
@@ -2071,6 +2074,7 @@ router.post(
         user,
         `/cube/blogpost/${post._id}`,
         `${user.username} added a comment to ${post.title}`,
+        util.notificationTypes.USER_COMMENT,
       );
     } else {
       // need to find owner from comment tree
@@ -2085,6 +2089,7 @@ router.post(
         user,
         `/cube/viewcomment/${post._id}/${positionText}`,
         `${user.username} replied to your comment on ${post.title}`,
+        util.notificationTypes.USER_COMMENT,
       );
     }
 
@@ -2308,6 +2313,7 @@ router.post('/submitdeck/:id', async (req, res) => {
         user,
         `/cube/deck/${deck._id}`,
         `${user.username} drafted your cube: ${cube.name}`,
+        util.notificationTypes.CUBE_DRAFT_OWN,
       );
     }
 
@@ -2426,6 +2432,7 @@ router.get('/rebuild/:id', ensureAuth, async (req, res) => {
         user,
         `/cube/deck/${deck._id}`,
         `${user.username} rebuilt a deck from your cube: ${cube.name}`,
+        util.notificationTypes.CUBE_DRAFT_OWN,
       );
     }
     if (baseUser && !baseUser._id.equals(user.id)) {
@@ -2434,6 +2441,7 @@ router.get('/rebuild/:id', ensureAuth, async (req, res) => {
         user,
         `/cube/deck/${deck._id}`,
         `${user.username} rebuilt your deck from cube: ${cube.name}`,
+        util.notificationTypes.CUBE_DRAFT_OWN,
       );
     }
 
